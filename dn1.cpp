@@ -23,12 +23,15 @@ bool Branje_Stevil(vector<unsigned char> &vec, const char s[]) {
 
 void Izpis_Stevil(vector<unsigned char>& A) {
 	ofstream output("out.txt");
+	if(output.is_open()){
+		for (unsigned char num : A) {
+			output << static_cast<int>(num) << " ";
+		}
 
-	for (unsigned char num : A) {
-		output << static_cast<int>(num) << " ";
+		output.close();
+	} else {
+		cerr << "Napaka pri odpiranju datoteke" << endl;
 	}
-
-	output.close();
 }
 
 
@@ -41,7 +44,7 @@ vector<int> extractKBit(const vector<unsigned char>& A, int k) {
     return D;
 }
 
-void countingSort(vector<unsigned char>& A) {
+void binaryRadixSort(vector<unsigned char>& A) {
     if (A.empty()) return;
 	for (int k = 0; k < 8; k++) {
 		int max = INT_MIN;
@@ -85,7 +88,7 @@ int main(int argc, const char* argv[]) {
 
 	if (!Branje_Stevil(A, argv[1])) return 0;
 
-	countingSort(A);
+	binaryRadixSort(A);
 
 	Izpis_Stevil(A);
 
