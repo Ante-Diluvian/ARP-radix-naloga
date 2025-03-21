@@ -1,1 +1,1 @@
-ARP naloga za ninarni radix sort
+ARP naloga za binarni radix sort

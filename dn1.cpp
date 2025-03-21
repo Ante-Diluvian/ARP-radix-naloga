@@ -4,7 +4,7 @@
 #include <climits>
 using namespace std;
 
-bool Branje_Stevil(vector<int> &vec, const char s[]) {
+bool Branje_Stevil(vector<unsigned char> &vec, const char s[]) {
 	ifstream input(s);
 	int st;
 
@@ -21,15 +21,18 @@ bool Branje_Stevil(vector<int> &vec, const char s[]) {
 	return true;
 }
 
-void Izpis_Stevil(int* polje, unsigned int velikost) {
+void Izpis_Stevil(vector<unsigned char>& A) {
 	ofstream output("out.txt");
 
-	for (int i = 0; i<velikost; i++)
-		output << polje[i] << ' ';
+	for (unsigned char num : A) {
+		output << static_cast<int>(num) << " ";
+	}
+
+	output.close();
 }
 
 
-vector<int> extractKthBit(const vector<int>& A, int k) {
+vector<int> extractKBit(const vector<unsigned char>& A, int k) {
     vector<int> D;
     for (int num : A) {
         int bit = (num >> k) & 1;
@@ -38,15 +41,51 @@ vector<int> extractKthBit(const vector<int>& A, int k) {
     return D;
 }
 
+void countingSort(vector<unsigned char>& A, vector<int>& D) {
+    if (A.empty()) return;
+	int max = INT_MIN;
+
+	for(int i=0; i < A.size(); i++){
+		if(A[i] > max){
+			max = A[i];
+		}
+	}
+
+    vector<int> C(max + 1, 0);
+    
+    for(int i = 0; i < D.size(); i++) {
+        C[D[i]]++;
+    }
+    
+    for(int i = 1; i < C.size(); i++) {
+        C[i] += C[i - 1];
+    }
+    
+    vector<unsigned char> sortedA(A.size());
+    vector<int> sortedD(D.size());
+    
+    for (int i = A.size() - 1; i >= 0; i--) {
+        int pos = C[D[i]] - 1;
+        sortedA[pos] = A[i];
+        sortedD[pos] = D[i];
+        C[D[i]]--;
+    }
+    
+    A = sortedA;
+    D = sortedD;
+}
+
 int main(int argc, const char* argv[]) {
-	vector<int> A;
+	vector<unsigned char> A;
 	int k = 0;
 
 	if (!Branje_Stevil(A, argv[1])) return 0;
 
-	vector<int> D = extractKthBit(A, k);
+	vector<int> D = extractKBit(A, k);
 
-	Izpis_Stevil(&A[0], A.size());
+	countingSort(A, D);
+
+	Izpis_Stevil(A);
 
 	return 0;
 }
