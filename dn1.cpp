@@ -21,7 +21,19 @@ bool Branje_Stevil(vector<int> &vec, const char s[]) {
 	return true;
 }
 
+void Izpis_Stevil(int* polje, unsigned int velikost) {
+	ofstream output("out.txt");
+
+	for (int i = 0; i<velikost; i++)
+		output << polje[i] << ' ';
+}
+
 int main(int argc, const char* argv[]) {
+	vector<int> A;
+
+	if (!Branje_Stevil(A, argv[1])) return 0;
+
+	Izpis_Stevil(&A[0], A.size());
 
 	return 0;
 }
