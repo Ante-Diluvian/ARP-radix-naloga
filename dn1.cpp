@@ -41,38 +41,42 @@ vector<int> extractKBit(const vector<unsigned char>& A, int k) {
     return D;
 }
 
-void countingSort(vector<unsigned char>& A, vector<int>& D) {
+void countingSort(vector<unsigned char>& A) {
     if (A.empty()) return;
-	int max = INT_MIN;
+	for (int k = 0; k < 8; k++) {
+		int max = INT_MIN;
+		vector<int> D = extractKBit(A, k);
 
-	for(int i=0; i < A.size(); i++){
-		if(A[i] > max){
-			max = A[i];
+		for(int i=0; i < A.size(); i++){
+			if(A[i] > max){
+				max = A[i];
+			}
 		}
+	
+		vector<int> C(max + 1, 0);
+		
+		for(int i = 0; i < D.size(); i++) {
+			C[D[i]]++;
+		}
+		
+		for(int i = 1; i < C.size(); i++) {
+			C[i] += C[i - 1];
+		}
+		
+		vector<unsigned char> sortedA(A.size());
+		vector<int> sortedD(D.size());
+		
+		for (int i = A.size() - 1; i >= 0; i--) {
+			int pos = C[D[i]] - 1;
+			sortedA[pos] = A[i];
+			sortedD[pos] = D[i];
+			C[D[i]]--;
+		}
+		
+		A = sortedA;
+
 	}
 
-    vector<int> C(max + 1, 0);
-    
-    for(int i = 0; i < D.size(); i++) {
-        C[D[i]]++;
-    }
-    
-    for(int i = 1; i < C.size(); i++) {
-        C[i] += C[i - 1];
-    }
-    
-    vector<unsigned char> sortedA(A.size());
-    vector<int> sortedD(D.size());
-    
-    for (int i = A.size() - 1; i >= 0; i--) {
-        int pos = C[D[i]] - 1;
-        sortedA[pos] = A[i];
-        sortedD[pos] = D[i];
-        C[D[i]]--;
-    }
-    
-    A = sortedA;
-    D = sortedD;
 }
 
 int main(int argc, const char* argv[]) {
@@ -81,9 +85,7 @@ int main(int argc, const char* argv[]) {
 
 	if (!Branje_Stevil(A, argv[1])) return 0;
 
-	vector<int> D = extractKBit(A, k);
-
-	countingSort(A, D);
+	countingSort(A);
 
 	Izpis_Stevil(A);
 
