@@ -12,7 +12,7 @@ jobs:
       error_found: ${{ steps.check_error.outputs.error }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Check if test script exists
         id: check_error
@@ -27,7 +27,7 @@ jobs:
           fi
 
       - name: Upload error file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: error-file
           path: napaka.txt
@@ -39,10 +39,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download error artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: error-file
 
