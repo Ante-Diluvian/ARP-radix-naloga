@@ -1,0 +1,66 @@
+name: 28584 - Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-tests:
+    runs-on: self-hosted
+    outputs:
+      error_found: ${{ steps.check_error.outputs.error }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check if test script exists
+        id: check_error
+        run: |
+          if [ ! -f "./test/test.sh" ]; then
+            echo "Test script not found!" >&2
+            echo "Test script not found!" > napaka.txt
+            echo "error=true" >> $GITHUB_OUTPUT
+          else
+            echo "Test script found." > napaka.txt
+            echo "error=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload error file
+        uses: actions/upload-artifact@v3
+        with:
+          name: error-file
+          path: napaka.txt
+
+  run-tests:
+    needs: check-tests
+    if: needs.check-tests.outputs.error_found == 'false'
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download error artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: error-file
+
+      - name: Read error file
+        run: |
+          echo "Error file content:"
+          cat napaka.txt
+
+      - name: Prepare test environment
+        run: |
+          sudo apt update
+          sudo apt install -y g++ make
+
+      - name: Compile code
+        run: |
+          g++ -o radix dn1.cpp
+
+      - name: Run test script
+        run: |
+          chmod +x ./test/test.sh
+          ./test/test.sh
