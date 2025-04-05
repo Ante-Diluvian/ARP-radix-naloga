@@ -2,7 +2,7 @@
 set -e
 
 echo "Running tests..."
-./radix primer_vhoda.txt > out.txt
+./radix ./test/primer_vhoda.txt > out.txt
 
 if grep -q "EXPECTED_RESULT" out.txt; then
     echo "Test passed."
