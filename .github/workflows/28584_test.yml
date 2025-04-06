@@ -8,8 +8,6 @@ on:
 jobs:
   check-tests:
     runs-on: self-hosted
-    outputs:
-      error_found: ${{ steps.check_error.outputs.error }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,10 +18,8 @@ jobs:
           if [ ! -f "./test/test.sh" ]; then
             echo "Test script not found!" >&2
             echo "Test script not found!" > napaka.txt
-            echo "error=true" >> $GITHUB_OUTPUT
           else
             echo "Test script found." > napaka.txt
-            echo "error=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Upload error file
@@ -34,7 +30,6 @@ jobs:
 
   run-tests:
     needs: check-tests
-    if: needs.check-tests.outputs.error_found == 'false'
     runs-on: self-hosted
 
     steps:
