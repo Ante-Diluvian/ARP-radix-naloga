@@ -3,16 +3,16 @@ name: 28584 - Test
 on:
   push:
     branches:
-      - main
+      - main # Ta workflow se sproži ob vsakem push-u na vejo 'main'
 
 jobs:
   check-tests:
-    runs-on: self-hosted
+    runs-on: self-hosted # Uporabi self-hosted runner
     steps:
-      - name: Checkout repository
+      - name: Checkout repository # Prenese (klonira) kodo repozitorija
         uses: actions/checkout@v4
 
-      - name: Check if test script exists
+      - name: Check if test script exists # Preveri, ali obstaja testna skripta
         id: check_error
         run: |
           if [ ! -f "./test/test.sh" ]; then
@@ -22,26 +22,26 @@ jobs:
             echo "Test script found." > napaka.txt
           fi
 
-      - name: Upload error file
+      - name: Upload error file # Naloži datoteko z napako kot artefakt
         uses: actions/upload-artifact@v4
         with:
           name: error-file
           path: napaka.txt
 
   run-tests:
-    needs: check-tests
+    needs: check-tests # Ta job se izvede šele, ko je končan 'check-tests' job
     runs-on: self-hosted
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository # Prenese (klonira) kodo repozitorija
         uses: actions/checkout@v4
 
-      - name: Download error artifact
+      - name: Download error artifact # Prenesi artefakt z napako
         uses: actions/download-artifact@v4
         with:
           name: error-file
 
-      - name: Read error file and check for issues
+      - name: Read error file and check for issues # Preberi datoteko z napako in preveri, ali obstajajo težave
         run: |
           echo "Error file content:"
           cat napaka.txt
@@ -50,16 +50,16 @@ jobs:
             exit 1
           fi
 
-      - name: Prepare test environment
+      - name: Prepare test environment # Pripravi okolje za testiranje
         run: |
           sudo apt update
           sudo apt install -y g++ make
 
-      - name: Compile code
+      - name: Compile code # Prevedi kodo
         run: |
           g++ -o radix dn1.cpp
 
-      - name: Run test script
+      - name: Run test script # Zaženi testno skripto
         run: |
           chmod +x ./test/test.sh
           ./test/test.sh

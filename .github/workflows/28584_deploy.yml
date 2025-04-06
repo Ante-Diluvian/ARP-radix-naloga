@@ -2,42 +2,42 @@ name: 28584 - Deploy
 
 on:
   workflow_run:
-    workflows: ["28584 - Test"]
+    workflows: ["28584 - Test"] # Ta workflow se sproži, ko je končan workflow "28584 - Test"
     types:
       - completed
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} # Ta job se izvede le, če je prejšnji workflow uspešno končan
     runs-on: self-hosted
 
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        version: [v1.0, latest]
+        os: [ubuntu-latest] # Uporabi Ubuntu kot operacijski sistem
+        version: [v1.0, latest] # Definiranje matrike za različice
 
     steps:
-      - name: Checkout code
+      - name: Checkout code # Prenese (klonira) kodo repozitorija
         uses: actions/checkout@v4
 
-      - name: Set up Docker
+      - name: Set up Docker # Pripravi Docker okolje
         run: |
           sudo apt update
           sudo apt install -y docker.io
           sudo systemctl start docker
           sudo usermod -aG docker $USER
 
-      - name: Build Docker image
+      - name: Build Docker image # Zgradi Docker sliko
         run: |
           docker build -t arsene5/radix-sort:${{ matrix.version }} .
 
-      - name: Log in to DockerHub
+      - name: Log in to DockerHub # Prijava v DockerHub
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASS: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
-      - name: Push Docker image
+      - name: Push Docker image # Potisni Docker sliko na DockerHub
         run: |
           docker push arsene5/radix-sort:${{ matrix.version }}
