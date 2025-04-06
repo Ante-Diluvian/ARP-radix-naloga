@@ -46,10 +46,14 @@ jobs:
         with:
           name: error-file
 
-      - name: Read error file
+      - name: Read error file and check for issues
         run: |
           echo "Error file content:"
           cat napaka.txt
+          if grep -q "not found" napaka.txt; then
+            echo "Test script is missing. Stopping execution."
+            exit 1
+          fi
 
       - name: Prepare test environment
         run: |
